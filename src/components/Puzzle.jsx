@@ -16,17 +16,11 @@ function neighbors(idx) {
   return out
 }
 
-function isSolved(tiles) {
-  return tiles.every((v, i) => v === i)
-}
+function isSolved(tiles) { return tiles.every((v, i) => v === i) }
 
-// Clue-aware shuffle. The more clues collected, the fewer scrambled positions.
-// 0 clues = 12 random moves, 5 clues = ~3 moves. Always solvable.
 function shuffleWithClues(cluesCollected, totalClues) {
   const ratio = totalClues > 0 ? cluesCollected / totalClues : 0
-  // 12 moves base, down to 3 if all clues collected
   const moves = Math.max(3, Math.round(12 - ratio * 9))
-
   let tiles = [...SOLVED]
   let blank = 8
   for (let i = 0; i < moves; i++) {
@@ -38,7 +32,7 @@ function shuffleWithClues(cluesCollected, totalClues) {
   return tiles
 }
 
-export default function Puzzle({ cluesCollected = 0, totalClues = 5, onContinue }) {
+export default function Puzzle({ cluesCollected = 0, totalClues = 9, onContinue }) {
   const [tiles, setTiles] = useState(() => shuffleWithClues(cluesCollected, totalClues))
   const solved = useMemo(() => isSolved(tiles), [tiles])
   const [showSolvedDelay, setShowSolvedDelay] = useState(false)
@@ -143,10 +137,7 @@ export default function Puzzle({ cluesCollected = 0, totalClues = 5, onContinue 
           Keep going
         </motion.button>
       ) : (
-        <button
-          className="puzzle__shuffle"
-          onClick={() => setTiles(shuffleWithClues(cluesCollected, totalClues))}
-        >
+        <button className="puzzle__shuffle" onClick={() => setTiles(shuffleWithClues(cluesCollected, totalClues))}>
           shuffle again
         </button>
       )}

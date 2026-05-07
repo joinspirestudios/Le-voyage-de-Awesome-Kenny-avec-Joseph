@@ -1,8 +1,12 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
+import ContinueButton from './ContinueButton'
 
-function Placeholder({ label }) {
+function Placeholder({ label, index }) {
+  // Add a small corner number for editorial feel
   return (
     <div className="placeholder">
+      <span className="placeholder__corner placeholder__corner--tl">{String(index + 1).padStart(2, '0')}</span>
+      <span className="placeholder__corner placeholder__corner--br">drop here</span>
       <div className="placeholder__inner">
         <div className="placeholder__icon">+</div>
         <div className="placeholder__label">{label || 'photo coming'}</div>
@@ -12,13 +16,13 @@ function Placeholder({ label }) {
   )
 }
 
-function MediaItem({ item }) {
+function MediaItem({ item, index }) {
   const sizeClass = `chapter__media-item chapter__media-item--${item.size || 'md'}`
 
   if (item.type === 'placeholder' || !item.src) {
     return (
       <div className={sizeClass}>
-        <Placeholder label={item.label} />
+        <Placeholder label={item.label} index={index} />
       </div>
     )
   }
@@ -41,7 +45,7 @@ function MediaItem({ item }) {
   )
 }
 
-export default function Chapter({ chapter, onCollectClue, collected }) {
+export default function Chapter({ chapter, onCollectClue, collected, onContinue }) {
   return (
     <section className="section">
       <div className="chapter">
@@ -61,7 +65,7 @@ export default function Chapter({ chapter, onCollectClue, collected }) {
             className="chapter__body"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.4, ease: [0.65, 0, 0.35, 1] }}
+            transition={{ duration: 1.2, delay: 0.4 }}
           >
             {chapter.body.map((p, i) => <p key={i}>{p}</p>)}
           </motion.div>
@@ -107,13 +111,15 @@ export default function Chapter({ chapter, onCollectClue, collected }) {
           className="chapter__media"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.6, delay: 0.4, ease: [0.65, 0, 0.35, 1] }}
+          transition={{ duration: 1.6, delay: 0.4 }}
         >
           {chapter.media.map((item, i) => (
-            <MediaItem key={i} item={item} />
+            <MediaItem key={i} item={item} index={i} />
           ))}
         </motion.div>
       </div>
+
+      <ContinueButton onClick={onContinue} />
     </section>
   )
 }

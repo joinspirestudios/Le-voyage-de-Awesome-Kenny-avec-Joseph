@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { proposalImage } from '../data/content'
 
-// SVG fallback if Joseph hasn't dropped his rose-in-mouth photo yet
 function FlowersSVG({ open }) {
   return (
     <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
@@ -98,12 +97,10 @@ function Petals() {
   )
 }
 
-// Trap stages — each "no" leads to a more ridiculous choice that always
-// nudges her toward yes. Stages get sillier and the yes button gets bigger.
 const trapStages = [
   {
     title: 'Are you <em>sure?</em>',
-    sub: "I drew flowers in code for you. I built nine pages. Click again. Carefully.",
+    sub: "I drew flowers in code for you. I built ten pages. Click again. Carefully.",
     noText: "Yes I'm sure",
     yesText: 'Wait, actually yes',
     yesClass: ''
@@ -124,9 +121,22 @@ const trapStages = [
   }
 ]
 
+function ImageWithFallback({ src, fallback }) {
+  const [errored, setErrored] = useState(false)
+  if (errored) return fallback
+  return (
+    <img
+      src={src}
+      alt="proposal"
+      onError={() => setErrored(true)}
+      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+    />
+  )
+}
+
 export default function Proposal() {
   const [boxOpen, setBoxOpen] = useState(false)
-  const [trapStage, setTrapStage] = useState(-1) // -1 = main, 0..n = trap stages
+  const [trapStage, setTrapStage] = useState(-1)
   const [final, setFinal] = useState(false)
 
   useEffect(() => {
@@ -138,7 +148,7 @@ export default function Proposal() {
   const onNoFromMain = () => setTrapStage(0)
   const onNoFromTrap = () => {
     if (trapStage < trapStages.length - 1) setTrapStage(s => s + 1)
-    else setTrapStage(0) // loop back to first if she's persistent
+    else setTrapStage(0)
   }
 
   return (
@@ -152,7 +162,6 @@ export default function Proposal() {
         transition={{ duration: 1.6, ease: [0.65, 0, 0.35, 1] }}
       >
         <div className="proposal__hero">
-          {/* If Joseph's photo is present it shows; otherwise the SVG flowers render */}
           <ImageWithFallback src={proposalImage} fallback={<FlowersSVG open={boxOpen} />} />
         </div>
 
@@ -185,7 +194,6 @@ export default function Proposal() {
         </motion.div>
       </motion.div>
 
-      {/* Trap stages */}
       <AnimatePresence>
         {trapStage >= 0 && !final && (
           <motion.div
@@ -194,7 +202,7 @@ export default function Proposal() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: [0.65, 0, 0.35, 1] }}
+            transition={{ duration: 0.8 }}
           >
             <motion.h2
               className="trap__title"
@@ -218,10 +226,7 @@ export default function Proposal() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1 }}
             >
-              <button
-                className={`trap__yes ${trapStages[trapStage].yesClass}`}
-                onClick={onYes}
-              >
+              <button className={`trap__yes ${trapStages[trapStage].yesClass}`} onClick={onYes}>
                 {trapStages[trapStage].yesText}
               </button>
               <button
@@ -246,7 +251,6 @@ export default function Proposal() {
         )}
       </AnimatePresence>
 
-      {/* Final yes screen */}
       <AnimatePresence>
         {final && (
           <motion.div
@@ -260,7 +264,7 @@ export default function Proposal() {
               className="final__headline"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 2, ease: [0.65, 0, 0.35, 1] }}
+              transition={{ duration: 2 }}
             >
               Yes.
             </motion.h2>
@@ -284,19 +288,5 @@ export default function Proposal() {
         )}
       </AnimatePresence>
     </section>
-  )
-}
-
-// Small helper that swaps to the SVG fallback if the proposal image fails to load
-function ImageWithFallback({ src, fallback }) {
-  const [errored, setErrored] = useState(false)
-  if (errored) return fallback
-  return (
-    <img
-      src={src}
-      alt="proposal"
-      onError={() => setErrored(true)}
-      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-    />
   )
 }

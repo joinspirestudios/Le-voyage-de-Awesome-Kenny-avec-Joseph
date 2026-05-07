@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { audioTracks } from '../data/content'
 
-// Receives the current page key from App and crossfades audio per page.
-// iOS-safe: only starts after first user interaction (begin button on intro).
 export default function AudioController({ enabled, pageKey }) {
   const audioRef = useRef(null)
   const [muted, setMuted] = useState(false)

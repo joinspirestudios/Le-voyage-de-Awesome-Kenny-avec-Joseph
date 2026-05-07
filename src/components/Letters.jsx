@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { herLetters } from '../data/content'
+import { herLetters, extraClues } from '../data/content'
+import ContinueButton from './ContinueButton'
 
 function Note({ letter, index }) {
   const colorClass = `note--${letter.color || 'sand'}`
@@ -35,7 +36,7 @@ function Note({ letter, index }) {
   )
 }
 
-export default function Letters() {
+export default function Letters({ onCollectClue, collected, onContinue }) {
   return (
     <section className="section letters">
       <motion.div
@@ -44,7 +45,7 @@ export default function Letters() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2 }}
       >
-        <p className="eyebrow">Chapter Seven</p>
+        <p className="eyebrow">Chapter Nine</p>
         <h2 className="letters__title">Everything <em>you</em> wrote me.</h2>
         <p className="letters__sub">
           I kept all of them. Every voice note, every napkin, every text I screenshot before you could change your mind.
@@ -56,6 +57,17 @@ export default function Letters() {
           <Note key={letter.id} letter={letter} index={i} />
         ))}
       </div>
+
+      <button
+        type="button"
+        onClick={onCollectClue}
+        disabled={collected}
+        className={`chapter__clue ${collected ? 'chapter__clue--collected' : ''}`}
+      >
+        {collected ? `kept — ${extraClues.letters}` : `keep ${extraClues.letters}`}
+      </button>
+
+      <ContinueButton onClick={onContinue} />
     </section>
   )
 }

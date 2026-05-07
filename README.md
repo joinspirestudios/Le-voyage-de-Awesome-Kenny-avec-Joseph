@@ -1,147 +1,93 @@
 # For Kenny — Year One
 
-An interactive anniversary site. React + Vite, deploys to Vercel.
+A 12-page interactive anniversary site. Inspired by Blank Studio's restraint:
+massive serif type, slow motion, intentional space.
 
-## Run it
+## Architecture
+
+12 pages, no overlap. Keyboard ← → to navigate. No on-screen page counter —
+each page has its own subtle "next ↓" arrow at the bottom.
+
+1. **Intro** — Massive italic "Kenny" with photos clipped to letterforms (BLANK reference)
+2. **Origin** — How we found each other (chapter)
+3. **Firsts** — First date, first kiss, first I-love-you (chapter)
+4. **Her Beauty** — Just for her (chapter)
+5. **Timeline** — Her life from 2003 to now. Auto-scrolling, hover to pause, click to expand. Built to grow with her.
+6. **Adventures** — Where we went (chapter — has real photos + house-hunting video)
+7. **Hard** — The fights, the breakup, the coming back (chapter — has real photos)
+8. **Puzzle** — 3×3 sliding puzzle. More clues you collected, easier the puzzle.
+9. **Friends** — 3D coverflow of friend-video birthday wishes, editorial italic name above active card
+10. **Letters** — Sticky-note board of things she wrote
+11. **Message** — A long letter from Joseph, with photos orbiting around it
+12. **Proposal** — Animated rose box → "Will you be my girlfriend? Properly this time."
+
+## What you need to drop in (`/public/media/`)
+
+```
+hero/01.jpg, 02.jpg, 03.jpg, 04.jpg     ← photos that pop through letterforms
+origin/                                  ← chapter media (any number, edit content.js)
+firsts/                                  ← same
+her-beauty/                              ← same
+adventures/                              ← already populated
+hard/                                    ← already populated
+friends/<name>.mp4 + <name>-poster.jpg   ← then add entries to friends[] in content.js
+letters/                                 ← scans (set image: "/media/letters/x.jpg" on each note)
+proposal/joseph-rose.jpg                 ← falls back to SVG flower box if missing
+audio/intro.mp3 ... proposal.mp3         ← one MP3 per page key, crossfades on transition
+```
+
+## What to edit (`src/data/content.js`)
+
+Single source of truth. Edit:
+- `heroPhotos` — which photos pop through the "Kenny" letters and where on the canvas
+- `chapters` — text + media for each chapter (replace `placeholder` items with real `src`)
+- `timelineEvents` — Kenny's milestones. Keep adding as years go by.
+- `friends` — once you have all video clips
+- `herLetters` — her words
+- `longMessage` — rewrite in your own voice + drop more orbital photos
+- `audioTracks` — the playlist per page
+
+## Running it
 
 ```bash
 npm install
-npm run dev
+npm run dev      # local
+npm run build    # production into /dist
 ```
 
-Open <http://localhost:5173>. To preview on her iPhone over the same Wi-Fi:
+## Deploy
 
-```bash
-npm run dev -- --host
-```
+Vercel root directory: project root. Build command: `npm run build`. Output: `dist`.
 
-then open the network URL it prints.
+## Notes
 
-## How it works now (rebuilt)
+- Music does not autoplay until user clicks "Begin" on the intro (iOS Safari rule).
+- Each page transition is `mode="wait"` — no overlap.
+- Continue arrow appears at bottom of every page except intro and proposal. Keyboard arrows also work.
+- Clue buttons are on every storytelling page. Each clue collected makes the puzzle on page 8 easier.
+- Timeline auto-scrolls horizontally; pauses on hover; click any event for a detail modal.
+- Long message has up to 8 photos drifting in an elliptical orbit around the centered text.
+- Friends coverflow has italic-serif name above the active card (Blank Studio editorial style).
+- Test on Kenny's actual iPhone before sharing.
 
-**Page-by-page navigation, no overlap.** Only one page mounts at a time. Cinematic fade + lift transition between them. Navigation: ← → arrow keys, or the prev / next pill at the bottom of the screen.
-
-**Page order:**
-1. Intro — *For Kenny.*
-2. Origin
-3. Firsts
-4. Her Beauty
-5. Adventures
-6. Hard
-7. Puzzle (uses any clues she collected during chapters to pre-solve tiles)
-8. Friends — 3D coverflow album, drag / arrows / tap centred card to play
-9. Letters — sticky-note board of letters she's written you
-10. Long Message — your letter to her
-11. Proposal — flowers, the question, escalating "no"-button trap, final yes screen
-
-**Clue collection.** Each chapter has a small "keep" button (e.g. *keep the pineapple*). When she taps it, the clue is collected. The more she keeps, the easier the puzzle is when she gets to it. If she keeps all 5, the puzzle solves in ~3 moves.
-
-## Where to drop content
+## File map
 
 ```
-public/media/
-├── origin/         ← chapter 1 photos
-├── firsts/         ← chapter 2
-├── her-beauty/     ← chapter 3
-├── adventures/     ← already populated
-├── hard/           ← already populated
-├── friends/        ← friend video files (.mp4) and posters (.jpg)
-├── letters/        ← scans / photos of her handwritten letters
-├── proposal/       ← optional photo to swap in for the SVG flowers
-└── audio/          ← background music per page (one mp3 per page key)
+src/
+  App.jsx              ← page routing, keyboard nav, clue collection state
+  main.jsx
+  styles.css           ← all styling
+  data/content.js      ← all copy + media references
+  components/
+    Intro.jsx          ← SVG hero with letter-clipped photos
+    Chapter.jsx        ← reusable chapter w/ premium placeholders
+    Timeline.jsx       ← auto-scrolling life timeline
+    Puzzle.jsx         ← sliding puzzle, clue-aware shuffle
+    FriendsAlbum.jsx   ← 3D coverflow + editorial italic name
+    Letters.jsx        ← sticky-note board
+    LongMessage.jsx    ← orbital photos around centered text
+    Proposal.jsx       ← rose box + no-button trap + final yes
+    AudioController.jsx
+    ContinueButton.jsx ← reusable bottom-of-page next arrow
+public/media/          ← all photos / videos / audio go here
 ```
-
-Filename rules: lowercase, hyphens, no spaces, no special characters.
-
-## Editing copy
-
-Everything lives in **`src/data/content.js`**. Edit the file, save, Vite hot-reloads.
-
-- `chapters[]` — title, eyebrow, body paragraphs, closing line, date, media list, clue label
-- `herLetters[]` — sticky notes (image scan or typed excerpt)
-- `longMessage` — your letter to her
-- `friends[]` — friend video entries
-- `audioTracks` — file path and display title per page
-- `pageOrder` — page sequence (only edit if you want to reorder or remove pages)
-- `puzzleImage` — the photo the puzzle uses
-- `proposalImage` — your "rose in mouth" photo when you generate it
-
-## How to add photos / videos to a chapter
-
-In `chapters[]`, edit the `media` array:
-
-```js
-media: [
-  { src: '/media/origin/first-photo.jpg', size: 'lg', label: 'first photo' },
-  { src: '/media/origin/clip.mp4', type: 'video', size: 'tall', label: '...' },
-  { type: 'placeholder', size: 'md', label: 'photo coming' }
-]
-```
-
-Sizes: `lg` (full row), `tall` (half, taller), `md` (half), `sm` (third).
-
-## How to add friend videos
-
-1. Put files in `public/media/friends/` — e.g. `bola.mp4`, `bola-poster.jpg`.
-2. Add to `friends[]`:
-
-```js
-export const friends = [
-  { name: 'Bola', role: 'Best friend', src: '/media/friends/bola.mp4', poster: '/media/friends/bola-poster.jpg' },
-  { name: 'Sarah', role: 'University', src: '/media/friends/sarah.mp4' }
-]
-```
-
-If `friends[]` is empty, placeholder cards still render so the 3D rotation works.
-
-## How to add letters
-
-In `herLetters[]`:
-
-```js
-{ id: 1, image: '/media/letters/letter-01.jpg', date: 'Apr 2025', tilt: -3 }       // photo of a letter
-{ id: 2, excerpt: '...you make me brave', date: 'Jun 2025', color: 'sand', tilt: 3 } // typed excerpt
-```
-
-Colors: `sand`, `cream`, `oxblood`. Tilt is in degrees (-6 to 6 looks natural).
-
-## How to add music
-
-1. Drop MP3s in `public/media/audio/` (e.g. `intro.mp3`, `origin.mp3`, etc.).
-2. Update `src` paths in `audioTracks` if you use different filenames.
-3. Music starts only after she taps **Begin** (iOS autoplay policy).
-4. Each page crossfades to the next track. Send individual files — don't pre-mix.
-
-## Compress big videos
-
-For any `.MOV` over ~10 MB:
-
-```bash
-ffmpeg -i input.MOV -vf "scale=1080:-2" -c:v libx264 -preset slow -crf 24 \
-  -c:a aac -b:a 128k -movflags +faststart output.mp4
-```
-
-## Deploy to Vercel
-
-```bash
-git init
-git add .
-git commit -m "for kenny"
-# create a private GitHub repo, push, then in Vercel: New Project → Import
-```
-
-Framework preset: **Vite**. Build command: `npm run build`. Output: `dist`. No env vars needed.
-
-## Final checklist
-
-- [ ] Origin photos added
-- [ ] Firsts photos added
-- [ ] Her Beauty photos added
-- [ ] Friend videos collected and added
-- [ ] Letter scans/excerpts added
-- [ ] Long message reviewed in `content.js`
-- [ ] Audio files (one per page key)
-- [ ] Proposal photo (your rose-in-mouth shot) when ready
-- [ ] Puzzle image confirmed
-- [ ] Deployed to Vercel
-- [ ] Tested on her iPhone in Safari

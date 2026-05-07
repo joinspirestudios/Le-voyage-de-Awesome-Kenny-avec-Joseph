@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Intro from './components/Intro'
 import Chapter from './components/Chapter'
+import Timeline from './components/Timeline'
 import Puzzle from './components/Puzzle'
 import FriendsAlbum from './components/FriendsAlbum'
 import Letters from './components/Letters'
 import LongMessage from './components/LongMessage'
 import Proposal from './components/Proposal'
 import AudioController from './components/AudioController'
-import PageNav from './components/PageNav'
-import { chapters, pageOrder } from './data/content'
+import { chapters, pageOrder, cluePages } from './data/content'
 
 const pageVariants = {
   enter: { opacity: 0, y: 24 },
@@ -19,34 +19,23 @@ const pageVariants = {
 
 export default function App() {
   const [pageIdx, setPageIdx] = useState(0)
-  const [collectedClues, setCollectedClues] = useState({}) // chapterId -> true
-  const [direction, setDirection] = useState(1)
+  const [collectedClues, setCollectedClues] = useState({})
 
   const current = pageOrder[pageIdx]
 
   const goNext = useCallback(() => {
-    setDirection(1)
     setPageIdx(i => Math.min(i + 1, pageOrder.length - 1))
   }, [])
 
   const goPrev = useCallback(() => {
-    setDirection(-1)
     setPageIdx(i => Math.max(i - 1, 0))
   }, [])
 
-  const goTo = useCallback((key) => {
-    const idx = pageOrder.findIndex(p => p.key === key)
-    if (idx >= 0) {
-      setDirection(idx > pageIdx ? 1 : -1)
-      setPageIdx(idx)
-    }
-  }, [pageIdx])
-
-  const collectClue = useCallback((chapterId) => {
-    setCollectedClues(prev => ({ ...prev, [chapterId]: true }))
+  const collectClue = useCallback((pageKey) => {
+    setCollectedClues(prev => ({ ...prev, [pageKey]: true }))
   }, [])
 
-  // Keyboard navigation
+  // Keyboard navigation only (no on-screen page counter pill)
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'ArrowRight' || e.key === 'PageDown') goNext()
@@ -57,17 +46,16 @@ export default function App() {
   }, [goNext, goPrev])
 
   // Reset scroll on page change
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' })
-  }, [pageIdx])
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }) }, [pageIdx])
 
-  const totalCluesAvailable = chapters.length
+  const totalCluesAvailable = cluePages.length
   const cluesCollected = Object.keys(collectedClues).length
 
+  // Continue arrow shows on every page except intro and proposal
+  const showContinue = pageIdx > 0 && current.kind !== 'proposal'
+
   const renderPage = () => {
-    if (current.kind === 'intro') {
-      return <Intro key="intro" onBegin={goNext} />
-    }
+    if (current.kind === 'intro') return <Intro key="intro" onBegin={goNext} />
     if (current.kind === 'chapter') {
       const chapter = chapters[current.index]
       return (
@@ -76,6 +64,17 @@ export default function App() {
           chapter={chapter}
           onCollectClue={() => collectClue(chapter.id)}
           collected={!!collectedClues[chapter.id]}
+          onContinue={goNext}
+        />
+      )
+    }
+    if (current.kind === 'timeline') {
+      return (
+        <Timeline
+          key="timeline"
+          onCollectClue={() => collectClue('timeline')}
+          collected={!!collectedClues['timeline']}
+          onContinue={goNext}
         />
       )
     }
@@ -89,18 +88,43 @@ export default function App() {
         />
       )
     }
-    if (current.kind === 'friends') return <FriendsAlbum key="friends" />
-    if (current.kind === 'letters') return <Letters key="letters" />
-    if (current.kind === 'message') return <LongMessage key="message" />
+    if (current.kind === 'friends') {
+      return (
+        <FriendsAlbum
+          key="friends"
+          onCollectClue={() => collectClue('friends')}
+          collected={!!collectedClues['friends']}
+          onContinue={goNext}
+        />
+      )
+    }
+    if (current.kind === 'letters') {
+      return (
+        <Letters
+          key="letters"
+          onCollectClue={() => collectClue('letters')}
+          collected={!!collectedClues['letters']}
+          onContinue={goNext}
+        />
+      )
+    }
+    if (current.kind === 'message') {
+      return (
+        <LongMessage
+          key="message"
+          onCollectClue={() => collectClue('message')}
+          collected={!!collectedClues['message']}
+          onContinue={goNext}
+        />
+      )
+    }
     if (current.kind === 'proposal') return <Proposal key="proposal" />
     return null
   }
 
-  const showNav = pageIdx > 0 && current.kind !== 'proposal'
-
   return (
     <div className="app">
-      <AnimatePresence mode="wait" initial={false} custom={direction}>
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={current.key}
           className="page"
@@ -116,16 +140,6 @@ export default function App() {
           {renderPage()}
         </motion.div>
       </AnimatePresence>
-
-      {showNav && (
-        <PageNav
-          pageIdx={pageIdx}
-          total={pageOrder.length}
-          onNext={goNext}
-          onPrev={goPrev}
-          currentKey={current.key}
-        />
-      )}
 
       <AudioController enabled={pageIdx > 0} pageKey={current.key} />
     </div>
