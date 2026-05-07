@@ -1,4 +1,16 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+
+function Placeholder({ label }) {
+  return (
+    <div className="placeholder">
+      <div className="placeholder__inner">
+        <div className="placeholder__icon">+</div>
+        <div className="placeholder__label">{label || 'photo coming'}</div>
+      </div>
+      <div className="placeholder__sweep" />
+    </div>
+  )
+}
 
 function MediaItem({ item }) {
   const sizeClass = `chapter__media-item chapter__media-item--${item.size || 'md'}`
@@ -6,7 +18,7 @@ function MediaItem({ item }) {
   if (item.type === 'placeholder' || !item.src) {
     return (
       <div className={sizeClass}>
-        <div className="placeholder">{item.label || 'photo coming'}</div>
+        <Placeholder label={item.label} />
       </div>
     )
   }
@@ -29,45 +41,73 @@ function MediaItem({ item }) {
   )
 }
 
-export default function Chapter({ chapter }) {
-  const cls = `chapter ${chapter.reverse ? 'chapter--reverse' : ''}`
-
-  const fadeIn = {
-    initial: { opacity: 0, y: 28 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: '-15%' },
-    transition: { duration: 1.2, ease: [0.65, 0, 0.35, 1] }
-  }
-
+export default function Chapter({ chapter, onCollectClue, collected }) {
   return (
-    <section className="section" id={chapter.id}>
-      <div className={cls}>
-        <motion.div className="chapter__text" {...fadeIn}>
+    <section className="section">
+      <div className="chapter">
+        <motion.div className="chapter__text">
           <div className="chapter__meta">
             <span className="chapter__number">{chapter.eyebrow} · {chapter.number}</span>
-            <h2
+            <motion.h2
               className="chapter__title"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.4, ease: [0.65, 0, 0.35, 1] }}
               dangerouslySetInnerHTML={{ __html: chapter.title }}
             />
           </div>
 
-          <div className="chapter__body">
+          <motion.div
+            className="chapter__body"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.4, ease: [0.65, 0, 0.35, 1] }}
+          >
             {chapter.body.map((p, i) => <p key={i}>{p}</p>)}
-          </div>
+          </motion.div>
 
-          {chapter.date && <p className="chapter__date">{chapter.date}</p>}
+          {chapter.date && (
+            <motion.p
+              className="chapter__date"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.8 }}
+            >
+              {chapter.date}
+            </motion.p>
+          )}
 
           {chapter.closingLine && (
-            <p className="chapter__close">{chapter.closingLine}</p>
+            <motion.p
+              className="chapter__close"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 1.0 }}
+            >
+              {chapter.closingLine}
+            </motion.p>
+          )}
+
+          {chapter.clueLabel && (
+            <motion.button
+              type="button"
+              onClick={onCollectClue}
+              disabled={collected}
+              className={`chapter__clue ${collected ? 'chapter__clue--collected' : ''}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.4 }}
+            >
+              {collected ? `kept — ${chapter.clueLabel}` : `keep ${chapter.clueLabel}`}
+            </motion.button>
           )}
         </motion.div>
 
         <motion.div
           className="chapter__media"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-10%' }}
-          transition={{ duration: 1.4, ease: [0.65, 0, 0.35, 1], delay: 0.2 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.6, delay: 0.4, ease: [0.65, 0, 0.35, 1] }}
         >
           {chapter.media.map((item, i) => (
             <MediaItem key={i} item={item} />

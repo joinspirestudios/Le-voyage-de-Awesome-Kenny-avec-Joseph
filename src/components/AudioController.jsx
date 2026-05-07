@@ -1,51 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { audioTracks } from '../data/content'
 
-// Detects which chapter section is in view via IntersectionObserver,
-// fades into the appropriate track. Tap the pill to mute/unmute.
-export default function AudioController({ enabled }) {
+// Receives the current page key from App and crossfades audio per page.
+// iOS-safe: only starts after first user interaction (begin button on intro).
+export default function AudioController({ enabled, pageKey }) {
   const audioRef = useRef(null)
-  const [currentKey, setCurrentKey] = useState('intro')
   const [muted, setMuted] = useState(false)
   const [trackError, setTrackError] = useState(false)
 
-  // Watch all sections with ids and detect which is most visible
-  useEffect(() => {
-    if (!enabled) return
-
-    const sections = Object.keys(audioTracks)
-      .map(id => document.getElementById(id))
-      .filter(Boolean)
-
-    if (sections.length === 0) return
-
-    const obs = new IntersectionObserver(
-      (entries) => {
-        let best = null
-        for (const e of entries) {
-          if (!best || e.intersectionRatio > best.intersectionRatio) best = e
-        }
-        if (best && best.isIntersecting && best.target.id !== currentKey) {
-          setCurrentKey(best.target.id)
-        }
-      },
-      { threshold: [0.3, 0.5, 0.7] }
-    )
-
-    sections.forEach(s => obs.observe(s))
-    return () => obs.disconnect()
-  }, [enabled, currentKey])
-
-  // When track key changes, fade out, swap source, fade in
   useEffect(() => {
     if (!enabled) return
     const audio = audioRef.current
     if (!audio) return
 
-    const track = audioTracks[currentKey]
+    const track = audioTracks[pageKey]
     if (!track) return
 
     let cancelled = false
+
     const fadeOut = () => new Promise(resolve => {
       const startVol = audio.volume
       const steps = 12
@@ -61,14 +33,14 @@ export default function AudioController({ enabled }) {
     })
 
     const fadeIn = () => {
-      const target = muted ? 0 : 0.45
-      const steps = 16
+      const target = muted ? 0 : 0.42
+      const steps = 18
       let i = 0
       const tick = () => {
         if (cancelled) return
         i++
         audio.volume = Math.min(target, (target * i) / steps)
-        if (i < steps) setTimeout(tick, 50)
+        if (i < steps) setTimeout(tick, 60)
       }
       tick()
     }
@@ -82,22 +54,20 @@ export default function AudioController({ enabled }) {
         await audio.play()
         setTrackError(false)
         fadeIn()
-      } catch (err) {
-        // Autoplay blocked — user needs interaction. Show muted state.
+      } catch {
         setTrackError(true)
       }
     })()
 
     return () => { cancelled = true }
-  }, [currentKey, enabled, muted])
+  }, [pageKey, enabled, muted])
 
-  // Toggle mute
   const toggle = async () => {
     const audio = audioRef.current
     if (!audio) return
     const newMuted = !muted
     setMuted(newMuted)
-    audio.volume = newMuted ? 0 : 0.45
+    audio.volume = newMuted ? 0 : 0.42
     if (!newMuted && audio.paused) {
       try { await audio.play() } catch {}
     }
@@ -105,7 +75,7 @@ export default function AudioController({ enabled }) {
 
   if (!enabled) return null
 
-  const label = audioTracks[currentKey]?.title || ''
+  const label = audioTracks[pageKey]?.title || ''
 
   return (
     <>

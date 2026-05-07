@@ -1,63 +1,133 @@
-import { useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import Intro from './components/Intro'
 import Chapter from './components/Chapter'
 import Puzzle from './components/Puzzle'
-import FriendsWall from './components/FriendsWall'
-import Letter from './components/Letter'
+import FriendsAlbum from './components/FriendsAlbum'
+import Letters from './components/Letters'
+import LongMessage from './components/LongMessage'
 import Proposal from './components/Proposal'
 import AudioController from './components/AudioController'
-import { chapters } from './data/content'
+import PageNav from './components/PageNav'
+import { chapters, pageOrder } from './data/content'
+
+const pageVariants = {
+  enter: { opacity: 0, y: 24 },
+  center: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -24 }
+}
 
 export default function App() {
-  const [started, setStarted] = useState(false)
-  const journeyRef = useRef(null)
+  const [pageIdx, setPageIdx] = useState(0)
+  const [collectedClues, setCollectedClues] = useState({}) // chapterId -> true
+  const [direction, setDirection] = useState(1)
 
-  const begin = () => {
-    setStarted(true)
-    // give the journey a moment to mount, then scroll into view
-    setTimeout(() => {
-      journeyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 200)
+  const current = pageOrder[pageIdx]
+
+  const goNext = useCallback(() => {
+    setDirection(1)
+    setPageIdx(i => Math.min(i + 1, pageOrder.length - 1))
+  }, [])
+
+  const goPrev = useCallback(() => {
+    setDirection(-1)
+    setPageIdx(i => Math.max(i - 1, 0))
+  }, [])
+
+  const goTo = useCallback((key) => {
+    const idx = pageOrder.findIndex(p => p.key === key)
+    if (idx >= 0) {
+      setDirection(idx > pageIdx ? 1 : -1)
+      setPageIdx(idx)
+    }
+  }, [pageIdx])
+
+  const collectClue = useCallback((chapterId) => {
+    setCollectedClues(prev => ({ ...prev, [chapterId]: true }))
+  }, [])
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') goNext()
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') goPrev()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [goNext, goPrev])
+
+  // Reset scroll on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pageIdx])
+
+  const totalCluesAvailable = chapters.length
+  const cluesCollected = Object.keys(collectedClues).length
+
+  const renderPage = () => {
+    if (current.kind === 'intro') {
+      return <Intro key="intro" onBegin={goNext} />
+    }
+    if (current.kind === 'chapter') {
+      const chapter = chapters[current.index]
+      return (
+        <Chapter
+          key={chapter.id}
+          chapter={chapter}
+          onCollectClue={() => collectClue(chapter.id)}
+          collected={!!collectedClues[chapter.id]}
+        />
+      )
+    }
+    if (current.kind === 'puzzle') {
+      return (
+        <Puzzle
+          key="puzzle"
+          cluesCollected={cluesCollected}
+          totalClues={totalCluesAvailable}
+          onContinue={goNext}
+        />
+      )
+    }
+    if (current.kind === 'friends') return <FriendsAlbum key="friends" />
+    if (current.kind === 'letters') return <Letters key="letters" />
+    if (current.kind === 'message') return <LongMessage key="message" />
+    if (current.kind === 'proposal') return <Proposal key="proposal" />
+    return null
   }
 
-  const scrollToProposal = () => {
-    document.getElementById('friends')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  // Split chapters: first three before puzzle, rest after.
-  // Order: origin → firsts → her-beauty → [puzzle] → adventures → hard → friends → letter → proposal
-  const beforePuzzle = chapters.filter(c => ['origin', 'firsts', 'her-beauty'].includes(c.id))
-  const afterPuzzle = chapters.filter(c => ['adventures', 'hard'].includes(c.id))
+  const showNav = pageIdx > 0 && current.kind !== 'proposal'
 
   return (
     <div className="app">
-      <AnimatePresence mode="wait">
-        {!started && <Intro key="intro" onBegin={begin} />}
+      <AnimatePresence mode="wait" initial={false} custom={direction}>
+        <motion.div
+          key={current.key}
+          className="page"
+          variants={pageVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            opacity: { duration: 0.9, ease: [0.65, 0, 0.35, 1] },
+            y: { duration: 1.1, ease: [0.65, 0, 0.35, 1] }
+          }}
+        >
+          {renderPage()}
+        </motion.div>
       </AnimatePresence>
 
-      {started && (
-        <motion.div
-          ref={journeyRef}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-        >
-          {beforePuzzle.map(c => <Chapter key={c.id} chapter={c} />)}
-
-          <Puzzle onContinue={scrollToProposal} />
-
-          {afterPuzzle.map(c => <Chapter key={c.id} chapter={c} />)}
-
-          <FriendsWall />
-
-          <Letter />
-
-          <Proposal />
-        </motion.div>
+      {showNav && (
+        <PageNav
+          pageIdx={pageIdx}
+          total={pageOrder.length}
+          onNext={goNext}
+          onPrev={goPrev}
+          currentKey={current.key}
+        />
       )}
 
-      <AudioController enabled={started} />
+      <AudioController enabled={pageIdx > 0} pageKey={current.key} />
     </div>
   )
 }

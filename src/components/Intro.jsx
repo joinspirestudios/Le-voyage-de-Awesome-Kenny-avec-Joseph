@@ -39,7 +39,7 @@ export default function Intro({ onBegin }) {
         transition={{ duration: 1.6, delay: 3.2 }}
         className="intro__hint"
       >
-        scroll slowly
+        use ← → to navigate
       </motion.p>
     </section>
   )

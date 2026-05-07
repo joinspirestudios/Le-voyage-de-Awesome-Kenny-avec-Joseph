@@ -1,12 +1,18 @@
-// All the copy, dates, and media references live here so Joseph can
-// edit the words without touching components.
+// All copy, dates, and media references live here. Edit freely; components don't need to change.
+
+export const introCopy = {
+  preName: 'For',
+  name: 'Kenny.',
+  line: 'A year, written down. Headphones on, please.',
+  cta: 'Begin'
+}
 
 export const chapters = [
   {
     id: 'origin',
     number: 'I',
-    title: 'How we found <em>each other</em>',
     eyebrow: 'Chapter One',
+    title: 'How we found <em>each other</em>',
     body: [
       "There's a version of every love story where you can pinpoint the exact moment everything changed. Ours has more than one.",
       "Before the first date, before the first kiss, there was something quieter — a feeling that the room got smaller when you walked into it."
@@ -15,16 +21,16 @@ export const chapters = [
     date: 'Before we knew it was beginning',
     media: [
       { type: 'placeholder', size: 'lg', label: 'first photo together' },
-      { type: 'placeholder', size: 'md', label: 'screenshot — that first message' },
+      { type: 'placeholder', size: 'md', label: 'that first message' },
       { type: 'placeholder', size: 'md', label: 'somewhere early' }
     ],
-    reverse: false
+    clueLabel: 'a screenshot you sent me'
   },
   {
     id: 'firsts',
     number: 'II',
-    title: 'Our <em>firsts</em>',
     eyebrow: 'Chapter Two',
+    title: 'Our <em>firsts</em>',
     body: [
       "I told you I loved you on June 3rd. I didn't kiss you until June 18th. Fifteen days of meaning it before I could prove it.",
       "First date — March 15th. First trip. First time you met my people. First time I met yours. A whole calendar of new things, all of them with you in them."
@@ -36,13 +42,13 @@ export const chapters = [
       { type: 'placeholder', size: 'tall', label: 'first kiss era' },
       { type: 'placeholder', size: 'lg', label: 'first trip' }
     ],
-    reverse: true
+    clueLabel: 'a polaroid from the first night'
   },
   {
     id: 'her-beauty',
     number: 'III',
-    title: 'Her <em>beauty</em>',
     eyebrow: 'Chapter Three',
+    title: 'Her <em>beauty</em>',
     body: [
       "This chapter is just for you. The way you tilt your head when you're thinking. The pineapple. The glasses. The way you look at me when you forget I'm looking back.",
       "I could write a thousand pages here and not finish."
@@ -54,13 +60,13 @@ export const chapters = [
       { type: 'placeholder', size: 'tall', label: 'her, golden hour' },
       { type: 'placeholder', size: 'lg', label: 'her, laughing' }
     ],
-    reverse: false
+    clueLabel: 'the pineapple'
   },
   {
     id: 'adventures',
     number: 'IV',
-    title: 'The places we <em>went</em>',
     eyebrow: 'Chapter Four',
+    title: 'The places we <em>went</em>',
     body: [
       "House hunting like we already knew. First staycation. The selfies in lobbies you said we didn't need. We needed them.",
       "Every trip a small experiment in being a us. Every trip we passed."
@@ -74,13 +80,13 @@ export const chapters = [
       { src: '/media/adventures/house-hunting.mp4', type: 'video', size: 'tall', label: 'House hunting' },
       { src: '/media/adventures/pxl_20251101_125729243.mp.jpg', size: 'tall', label: 'November' }
     ],
-    reverse: true
+    clueLabel: 'a ticket stub'
   },
   {
     id: 'hard',
     number: 'V',
-    title: 'The <em>hard</em> ones',
     eyebrow: 'Chapter Five',
+    title: 'The <em>hard</em> ones',
     body: [
       "There were nights it didn't go well. The first big fight. The first time we didn't know if we were going to make it. The version of us in 2023 that didn't.",
       "And here we are anyway. Bruised, honest, still choosing this. The fights aren't the story. The coming back is."
@@ -93,37 +99,34 @@ export const chapters = [
       { src: '/media/hard/first-relationship-fight.jpg', size: 'tall', label: 'First fight' },
       { src: '/media/hard/first-near-breakup-experience.jpg', size: 'tall', label: 'Near miss' }
     ],
-    reverse: false
+    clueLabel: 'the morning after'
   }
 ]
 
-// Friend videos. Joseph drops files into /public/media/friends/ and
-// adds entries here. Posters are optional thumbnails.
+// Friend videos
 export const friends = [
-  // { name: 'Bola', role: 'Best friend', src: '/media/friends/bola.mp4', poster: '/media/friends/bola-poster.jpg' },
-  // Empty for now — placeholders will render until you add entries.
+  // { name: 'Bola', src: '/media/friends/bola.mp4', poster: '/media/friends/bola-poster.jpg', role: 'Best friend' },
 ]
 
-export const proposalImage = '/media/proposal/flowers.jpg'
+// Letters Kenny has written you. `image` for scans, `excerpt` for typed-out notes.
+export const herLetters = [
+  { id: 1, excerpt: 'placeholder — drop a scan of her letter or type out an excerpt', date: '2025', color: 'sand', tilt: -4 },
+  { id: 2, excerpt: 'her words, in her hand', date: '2025', color: 'cream', tilt: 3 },
+  { id: 3, excerpt: 'kept on your nightstand', date: '2025', color: 'oxblood', tilt: -2 },
+  { id: 4, excerpt: 'add as many as you have', date: '2025', color: 'sand', tilt: 5 }
+]
 
-// The puzzle uses a single hero image of the two of you. Replace this
-// with your favourite shared photo.
-export const puzzleImage = '/media/adventures/selfieeee.jpg'
-
-export const letterCopy = {
+export const longMessage = {
+  eyebrow: 'For Kenny — read slowly',
+  title: 'Everything I should have said <em>out loud</em>',
   paragraphs: [
-    "Tonight we fought. And tonight, after, I sat down and finished this anyway — because the fight didn't change anything I came here to say.",
-    "A year ago I didn't know how I'd feel today. I just knew I wanted to find out. And now I know: every version of you I've met this year, I'd choose again. The quiet one. The loud one. The one who doesn't want to talk yet. The one who finally does.",
-    "I never asked you properly. I'm asking you now."
+    "I'm not good at saying things in the moment. You've noticed. Half the things I feel about you only ever make it to a notes app at 2 a.m., and even then I delete the soft parts before morning.",
+    "So this is me saying them properly, in the place I'm best — written down, taking my time, knowing you'll read it more than once.",
+    "You changed the texture of my year. I notice things now I didn't notice before. I make decisions differently. There's a small voice in the back of my head that asks what you'd think, and I'm grateful for it — it makes me a person I like better.",
+    "Tonight didn't go the way either of us wanted. And I sat down after, and I kept building. Because none of it changes what I came here to say, and none of it changes that I'd choose this — choose you — again.",
+    "A year in, knowing what I know now, all of it: yes."
   ],
-  signoff: "— J."
-}
-
-export const introCopy = {
-  preName: 'For',
-  name: 'Kenny.',
-  line: 'A year, written down. Headphones on, please.',
-  cta: 'Begin'
+  signoff: '— Always, J.'
 }
 
 export const audioTracks = {
@@ -135,6 +138,24 @@ export const audioTracks = {
   hard: { src: '/media/audio/hard.mp3', title: 'A quieter song' },
   puzzle: { src: '/media/audio/puzzle.mp3', title: 'Davido — 1 Milli' },
   friends: { src: '/media/audio/friends.mp3', title: 'Naira Marley — Opotoyi' },
-  letter: { src: '/media/audio/letter.mp3', title: 'A song for you' },
+  letters: { src: '/media/audio/letters.mp3', title: 'Her words' },
+  message: { src: '/media/audio/message.mp3', title: 'Mine' },
   proposal: { src: '/media/audio/proposal.mp3', title: 'Yes' }
 }
+
+export const pageOrder = [
+  { key: 'intro', kind: 'intro' },
+  { key: 'origin', kind: 'chapter', index: 0 },
+  { key: 'firsts', kind: 'chapter', index: 1 },
+  { key: 'her-beauty', kind: 'chapter', index: 2 },
+  { key: 'adventures', kind: 'chapter', index: 3 },
+  { key: 'hard', kind: 'chapter', index: 4 },
+  { key: 'puzzle', kind: 'puzzle' },
+  { key: 'friends', kind: 'friends' },
+  { key: 'letters', kind: 'letters' },
+  { key: 'message', kind: 'message' },
+  { key: 'proposal', kind: 'proposal' }
+]
+
+export const puzzleImage = '/media/adventures/selfieeee.jpg'
+export const proposalImage = '/media/proposal/joseph-rose.jpg'
