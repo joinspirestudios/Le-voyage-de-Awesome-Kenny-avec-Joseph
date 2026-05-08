@@ -1,11 +1,14 @@
 import { motion } from 'framer-motion'
 import { introCopy, heroPhotos } from '../data/content'
 
-// SVG hero — three layers in order, bottom to top:
+// Three layers, bottom to top:
 //   1. Black background
-//   2. White "Kenny" text — gives the visible white letterforms
-//   3. Photos clipped to the same text shape — when a photo fades in, it
-//      "replaces" the white inside that letterform with the photo
+//   2. White "Kenny" text base — gives the visible white letterforms
+//   3. Photos clipped to the same text shape via CSS animations — they pop
+//      in and out at staggered intervals, replacing white inside letters.
+//
+// Plain CSS animations on SVG <image> are bulletproof; framer-motion's
+// motion.image had issues animating href-based SVG images.
 export default function Intro({ onBegin }) {
   return (
     <section className="section hero">
@@ -19,6 +22,7 @@ export default function Intro({ onBegin }) {
           viewBox="0 0 1600 600"
           className="hero__svg"
           xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
@@ -41,7 +45,7 @@ export default function Intro({ onBegin }) {
           {/* Layer 1 — black background */}
           <rect width="100%" height="100%" fill="#1a0a0a" />
 
-          {/* Layer 2 — visible white text (the base letterforms) */}
+          {/* Layer 2 — visible white letterforms */}
           <text
             x="50%"
             y="58%"
@@ -56,11 +60,10 @@ export default function Intro({ onBegin }) {
             Kenny
           </text>
 
-          {/* Layer 3 — photos clipped to text shape, animating in/out
-                       on top of the white letters */}
+          {/* Layer 3 — photos clipped to letterform shape, CSS-animated */}
           <g clipPath="url(#kennyMask)">
             {heroPhotos.map((p, i) => (
-              <motion.image
+              <image
                 key={i}
                 href={p.src}
                 xlinkHref={p.src}
@@ -68,16 +71,8 @@ export default function Intro({ onBegin }) {
                 y={`${p.y}%`}
                 width={`${p.w}%`}
                 preserveAspectRatio="xMidYMid slice"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 1, 1, 0] }}
-                transition={{
-                  duration: 4,
-                  delay: p.delay,
-                  repeat: Infinity,
-                  repeatDelay: Math.max(2, heroPhotos.length * 1.2 - 4),
-                  times: [0, 0.15, 0.85, 1],
-                  ease: 'easeInOut'
-                }}
+                className="hero__photo"
+                style={{ animationDelay: `${p.delay}s` }}
               />
             ))}
           </g>

@@ -159,6 +159,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .hero__svg { width: 100%; height: auto; display: block; }
 
+/* Hero photos animation — pop in/out at staggered delays inside letterforms */
+.hero__photo {
+  opacity: 0;
+  animation: hero-pop 9s ease-in-out infinite;
+}
+
+@keyframes hero-pop {
+  0%, 100% { opacity: 0; }
+  10%, 50% { opacity: 1; }
+}
+
 .hero__sub {
   position: relative;
   font-family: var(--f-italic);
@@ -206,74 +217,305 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Chapter
+   Chapter — Video 5 vertical layout (text top, media grid below)
    ─────────────────────────────────────────────────────────────── */
-.chapter {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(40px, 6vw, 80px);
-  max-width: 1280px;
+.chapter-v {
+  flex-direction: column;
   width: 100%;
+  max-width: 1480px;
   margin: 0 auto;
-  padding: clamp(60px, 10vh, 120px) 0 clamp(80px, 12vh, 140px);
+  padding: clamp(60px, 10vh, 120px) var(--pad) clamp(80px, 12vh, 140px);
+  gap: clamp(50px, 7vw, 90px);
   align-items: center;
 }
 
-@media (min-width: 900px) {
-  .chapter { grid-template-columns: 5fr 7fr; }
-  .chapter--reverse .chapter__text { order: 2; }
+.chapter-v__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
-.chapter__meta { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
-
-.chapter__number {
+.chapter-v__title {
   font-family: var(--f-display);
   font-weight: 300;
-  font-size: 12px;
-  color: var(--c-gold);
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-}
-
-.chapter__title {
-  font-family: var(--f-display);
-  font-weight: 300;
-  font-size: clamp(40px, 8vw, 84px);
+  font-size: clamp(44px, 8.5vw, 96px);
   line-height: 0.95;
   letter-spacing: -0.025em;
   color: var(--c-cream);
 }
-.chapter__title em { font-family: var(--f-italic); font-style: italic; color: var(--c-gold); }
+.chapter-v__title em { font-family: var(--f-italic); font-style: italic; color: var(--c-gold); }
 
-.chapter__body p {
+.chapter-v__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-top: 12px;
+}
+
+.chapter-v__body p {
   font-family: var(--f-body);
   font-weight: 300;
   font-size: clamp(15px, 1.6vw, 17px);
   line-height: 1.75;
   color: var(--c-cream-dim);
-  margin-bottom: 1.2em;
-  max-width: 50ch;
+  max-width: 56ch;
 }
 
-.chapter__date {
+.chapter-v__date {
   font-family: var(--f-italic);
   font-style: italic;
   font-size: 14px;
   color: var(--c-gold-soft);
-  margin-top: 16px;
+  margin-top: 8px;
   letter-spacing: 0.04em;
 }
 
-.chapter__close {
-  margin-top: 48px;
-  padding: 24px 28px 24px 32px;
-  border-left: 1px solid var(--c-gold);
+.chapter-v__close {
+  margin-top: 24px;
+  padding: 20px 28px;
+  border-top: 1px solid rgba(201, 166, 107, 0.3);
+  border-bottom: 1px solid rgba(201, 166, 107, 0.3);
   font-family: var(--f-italic);
   font-style: italic;
-  font-size: clamp(17px, 2vw, 22px);
+  font-size: clamp(18px, 2.2vw, 24px);
   line-height: 1.5;
   color: var(--c-cream);
-  max-width: 48ch;
+  max-width: 52ch;
+}
+
+/* Wide horizontal grid below the text — Video 5 reference */
+.chapter-v__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (min-width: 700px) { .chapter-v__grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1100px) { .chapter-v__grid { grid-template-columns: repeat(8, 1fr); } }
+
+.chapter-v__tile {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--c-oxblood-deep);
+  border-radius: 2px;
+}
+
+.chapter-v__tile img,
+.chapter-v__tile video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.4s var(--ease-cinematic);
+}
+
+.chapter-v__tile:hover img,
+.chapter-v__tile:hover video { transform: scale(1.05); }
+
+/* ──────────────────────────────────────────────────────────────────
+   Split Chapter — Video 6 dual-panel layout (Her Beauty, Us)
+   ─────────────────────────────────────────────────────────────── */
+.split {
+  flex-direction: column;
+  width: 100%;
+  padding: clamp(60px, 10vh, 100px) 0 clamp(80px, 12vh, 140px);
+  gap: clamp(40px, 6vw, 70px);
+}
+
+.split__head {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 var(--pad);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.split__title {
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: clamp(44px, 8vw, 92px);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  color: var(--c-cream);
+}
+.split__title em { font-family: var(--f-italic); font-style: italic; color: var(--c-gold); }
+
+/* The split-screen stage — two big panels side by side */
+.split__stage {
+  position: relative;
+  width: 100%;
+  height: clamp(420px, 70vh, 720px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background: var(--c-ink);
+  overflow: hidden;
+}
+
+.split__panel {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--c-oxblood-deep);
+}
+
+.split__panel img,
+.split__panel video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 8s var(--ease-soft);
+}
+
+.split__panel:hover img, .split__panel:hover video { transform: scale(1.05); }
+
+.split__panel .placeholder { width: 100%; height: 100%; }
+
+.split__caption {
+  position: absolute;
+  left: clamp(16px, 2vw, 32px);
+  bottom: clamp(16px, 2vw, 32px);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.split__caption-name {
+  font-family: var(--f-italic);
+  font-style: italic;
+  font-size: clamp(20px, 2.4vw, 28px);
+  color: var(--c-cream);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+}
+
+.split__caption-meta {
+  font-family: var(--f-body);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--c-gold);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Center thumb strip — sits in middle, overlapping both panels */
+.split__thumbs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+  padding: 10px;
+  background: rgba(26, 10, 10, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(201, 166, 107, 0.25);
+  border-radius: 4px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.split__thumb {
+  position: relative;
+  width: clamp(54px, 6.5vw, 84px);
+  height: clamp(54px, 6.5vw, 84px);
+  background: var(--c-oxblood-deep);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.5s var(--ease-cinematic);
+  border-radius: 2px;
+}
+
+.split__thumb:hover { transform: translateY(-4px) scale(1.06); z-index: 6; }
+
+.split__thumb img, .split__thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.split__thumb .placeholder { width: 100%; height: 100%; }
+
+.split__thumb-num {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 9px;
+  color: var(--c-cream);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+
+/* On mobile: stack panels vertically; thumb strip becomes a horizontal scroll */
+@media (max-width: 720px) {
+  .split__stage {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .split__panel { aspect-ratio: 4 / 5; height: auto; }
+  .split__thumbs {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: -1px auto;
+    width: calc(100% - 24px);
+  }
+}
+
+.split__body {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 var(--pad);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1em;
+}
+
+.split__body p {
+  font-family: var(--f-body);
+  font-weight: 300;
+  font-size: clamp(15px, 1.6vw, 17px);
+  line-height: 1.75;
+  color: var(--c-cream-dim);
+}
+
+.split__date {
+  font-family: var(--f-italic);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--c-gold-soft);
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+
+.split__close {
+  margin-top: 24px;
+  padding: 20px 28px;
+  border-top: 1px solid rgba(201, 166, 107, 0.3);
+  border-bottom: 1px solid rgba(201, 166, 107, 0.3);
+  font-family: var(--f-italic);
+  font-style: italic;
+  font-size: clamp(18px, 2.2vw, 24px);
+  line-height: 1.5;
+  color: var(--c-cream);
 }
 
 .chapter__clue {
@@ -318,40 +560,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .chapter__clue--collected::before { content: '✓'; font-size: 13px; }
 .chapter__clue--collected:hover { transform: none; }
-
-.chapter__media { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
-
-.chapter__media-item {
-  position: relative;
-  overflow: hidden;
-  background: var(--c-oxblood-deep);
-  border-radius: 2px;
-}
-
-.chapter__media-item img,
-.chapter__media-item video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 1.4s var(--ease-cinematic);
-}
-
-.chapter__media-item:hover img,
-.chapter__media-item:hover video { transform: scale(1.04); }
-
-.chapter__media-item--feature { grid-column: span 6; aspect-ratio: 16 / 11; }
-.chapter__media-item--lg { grid-column: span 6; aspect-ratio: 16 / 11; }
-.chapter__media-item--tall { grid-column: span 3; aspect-ratio: 3 / 4; }
-.chapter__media-item--md { grid-column: span 3; aspect-ratio: 4 / 5; }
-.chapter__media-item--sm { grid-column: span 2; aspect-ratio: 1 / 1; }
-
-@media (max-width: 600px) {
-  .chapter__media-item--feature,
-  .chapter__media-item--md,
-  .chapter__media-item--sm,
-  .chapter__media-item--tall { grid-column: span 6; aspect-ratio: 4 / 5; }
-}
 
 /* ──────────────────────────────────────────────────────────────────
    Premium placeholder — editorial drop zone

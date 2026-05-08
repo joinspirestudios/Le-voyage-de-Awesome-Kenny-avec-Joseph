@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Intro from './components/Intro'
 import Chapter from './components/Chapter'
+import SplitChapter from './components/SplitChapter'
 import Timeline from './components/Timeline'
 import Puzzle from './components/Puzzle'
 import FriendsAlbum from './components/FriendsAlbum'
@@ -9,7 +10,7 @@ import Letters from './components/Letters'
 import LongMessage from './components/LongMessage'
 import Proposal from './components/Proposal'
 import AudioController from './components/AudioController'
-import { chapters, pageOrder, cluePages } from './data/content'
+import { chapters, splitChapters, pageOrder, cluePages } from './data/content'
 
 const pageVariants = {
   enter: { opacity: 0, y: 24 },
@@ -35,7 +36,6 @@ export default function App() {
     setCollectedClues(prev => ({ ...prev, [pageKey]: true }))
   }, [])
 
-  // Keyboard navigation only (no on-screen page counter pill)
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'ArrowRight' || e.key === 'PageDown') goNext()
@@ -45,14 +45,10 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler)
   }, [goNext, goPrev])
 
-  // Reset scroll on page change
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }) }, [pageIdx])
 
   const totalCluesAvailable = cluePages.length
   const cluesCollected = Object.keys(collectedClues).length
-
-  // Continue arrow shows on every page except intro and proposal
-  const showContinue = pageIdx > 0 && current.kind !== 'proposal'
 
   const renderPage = () => {
     if (current.kind === 'intro') return <Intro key="intro" onBegin={goNext} />
@@ -60,6 +56,18 @@ export default function App() {
       const chapter = chapters[current.index]
       return (
         <Chapter
+          key={chapter.id}
+          chapter={chapter}
+          onCollectClue={() => collectClue(chapter.id)}
+          collected={!!collectedClues[chapter.id]}
+          onContinue={goNext}
+        />
+      )
+    }
+    if (current.kind === 'split') {
+      const chapter = splitChapters[current.index]
+      return (
+        <SplitChapter
           key={chapter.id}
           chapter={chapter}
           onCollectClue={() => collectClue(chapter.id)}
@@ -79,44 +87,16 @@ export default function App() {
       )
     }
     if (current.kind === 'puzzle') {
-      return (
-        <Puzzle
-          key="puzzle"
-          cluesCollected={cluesCollected}
-          totalClues={totalCluesAvailable}
-          onContinue={goNext}
-        />
-      )
+      return <Puzzle key="puzzle" cluesCollected={cluesCollected} totalClues={totalCluesAvailable} onContinue={goNext} />
     }
     if (current.kind === 'friends') {
-      return (
-        <FriendsAlbum
-          key="friends"
-          onCollectClue={() => collectClue('friends')}
-          collected={!!collectedClues['friends']}
-          onContinue={goNext}
-        />
-      )
+      return <FriendsAlbum key="friends" onCollectClue={() => collectClue('friends')} collected={!!collectedClues['friends']} onContinue={goNext} />
     }
     if (current.kind === 'letters') {
-      return (
-        <Letters
-          key="letters"
-          onCollectClue={() => collectClue('letters')}
-          collected={!!collectedClues['letters']}
-          onContinue={goNext}
-        />
-      )
+      return <Letters key="letters" onCollectClue={() => collectClue('letters')} collected={!!collectedClues['letters']} onContinue={goNext} />
     }
     if (current.kind === 'message') {
-      return (
-        <LongMessage
-          key="message"
-          onCollectClue={() => collectClue('message')}
-          collected={!!collectedClues['message']}
-          onContinue={goNext}
-        />
-      )
+      return <LongMessage key="message" onCollectClue={() => collectClue('message')} collected={!!collectedClues['message']} onContinue={goNext} />
     }
     if (current.kind === 'proposal') return <Proposal key="proposal" />
     return null
