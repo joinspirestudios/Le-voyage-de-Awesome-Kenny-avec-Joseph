@@ -1,51 +1,73 @@
 # For Kenny — Year One
 
-A 12-page interactive anniversary site. Inspired by Blank Studio's restraint:
+A 13-page interactive anniversary site. Inspired by Blank Studio's restraint:
 massive serif type, slow motion, intentional space.
 
 ## Architecture
 
-12 pages, no overlap. Keyboard ← → to navigate. No on-screen page counter —
-each page has its own subtle "next ↓" arrow at the bottom.
+13 pages, no overlap. Keyboard ← → to navigate. Each page has a subtle "next ↓" arrow at the bottom.
 
-1. **Intro** — Massive italic "Kenny" with photos clipped to letterforms (BLANK reference)
-2. **Origin** — How we found each other (chapter)
-3. **Firsts** — First date, first kiss, first I-love-you (chapter)
-4. **Her Beauty** — Just for her (chapter)
-5. **Timeline** — Her life from 2003 to now. Auto-scrolling, hover to pause, click to expand. Built to grow with her.
-6. **Adventures** — Where we went (chapter — has real photos + house-hunting video)
-7. **Hard** — The fights, the breakup, the coming back (chapter — has real photos)
-8. **Puzzle** — 3×3 sliding puzzle. More clues you collected, easier the puzzle.
-9. **Friends** — 3D coverflow of friend-video birthday wishes, editorial italic name above active card
-10. **Letters** — Sticky-note board of things she wrote
-11. **Message** — A long letter from Joseph, with photos orbiting around it
-12. **Proposal** — Animated rose box → "Will you be my girlfriend? Properly this time."
+1. **Intro** — 3 portrait videos as triptych behind massive italic "Kenny"
+2. **Origin** (Chapter I) — How we found each other (2022 → early 2024)
+3. **Firsts** (Chapter II) — Our firsts (2025+)
+4. **Her Beauty** (Chapter III) — Split-screen, click-to-swap
+5. **Us** (Chapter IV) — Split-screen, click-to-swap
+6. **Timeline** — Her life from 2003 to now. Auto-scrolls horizontally.
+7. **Adventures** (Chapter V) — Where we went
+8. **Hard** (Chapter VI) — The fights, the breakup, the coming back
+9. **Puzzle** — 3×3 sliding puzzle. More clues collected, easier the puzzle.
+10. **Friends** — 3D coverflow of friend videos (Bolu, Ope so far)
+11. **Letters** — Sticky-note board of things she wrote
+12. **Message** — A long letter, with photos orbiting around it
+13. **Proposal** — Animated rose box → "Will you be my girlfriend? Properly this time."
 
-## What you need to drop in (`/public/media/`)
+## Layouts
+
+### Video 5 layout (chapters: Origin, Firsts, Adventures, Hard)
+- Title block centered at top: eyebrow + serif title + body paragraphs + closing line + clue button
+- **Two horizontally-marqueeing rows of square media tiles below**
+- Top row scrolls left, bottom row scrolls right
+- **Hover any row to pause it. Click any tile to open fullscreen.**
+- Edge fade masks make the marquee feel infinite.
+
+### Video 6 layout (Her Beauty, Us)
+- Title block at top
+- **Two big full-bleed panels side-by-side**
+- **Center thumb strip with all media — scrollable horizontally**
+- **Click a thumb to swap it into one of the big panels** (alternates left/right)
+- **Click either big panel to open fullscreen.** Active thumbs glow gold.
+- Body text below the visual stage, with date + closing line + clue button.
+
+### Lightbox (everywhere)
+- Click any image or video tile → opens in fullscreen with a dim backdrop and close button.
+- Press Esc, click outside, or hit × to close.
+
+## What's already wired in (`/public/media/`)
 
 ```
-hero/01.jpg, 02.jpg, 03.jpg, 04.jpg     ← photos that pop through letterforms
-origin/                                  ← chapter media (any number, edit content.js)
-firsts/                                  ← same
-her-beauty/                              ← same
-adventures/                              ← already populated
-hard/                                    ← already populated
-friends/<name>.mp4 + <name>-poster.jpg   ← then add entries to friends[] in content.js
-letters/                                 ← scans (set image: "/media/letters/x.jpg" on each note)
-proposal/joseph-rose.jpg                 ← falls back to SVG flower box if missing
-audio/intro.mp3 ... proposal.mp3         ← one MP3 per page key, crossfades on transition
+hero/         3 portrait videos (img-5253, img-5252, img-5250) — playing on Intro
+origin/       17 items — 2022/2024 era photos + "her first apartment" video
+firsts/       15 items — first date, first kiss video, first marathon, etc.
+her-beauty/   18 items — portraits + "in the wind" video
+us/           21 items — including "Our Custom Handshake" video, first christmas, marathon
+adventures/   18 items — staycation, house hunting, lots of small clips
+hard/         9 items  — last dates 2023, first fight (with video)
+friends/      Bolu.mp4, Ope-2.mp4 (2 of 4 — remaining 2 pending)
+quiet/        14 intimate captioned shots — drives the orbital photos in the long message
+proposal/     joseph-rose.jpg (drop in your own; falls back to animated SVG)
+audio/        empty (drop one MP3 per page key)
+letters/      empty (drop scans + update herLetters[] in content.js)
+timeline/     empty (timeline page is text-driven currently)
 ```
 
-## What to edit (`src/data/content.js`)
+## What you still need to do
 
-Single source of truth. Edit:
-- `heroPhotos` — which photos pop through the "Kenny" letters and where on the canvas
-- `chapters` — text + media for each chapter (replace `placeholder` items with real `src`)
-- `timelineEvents` — Kenny's milestones. Keep adding as years go by.
-- `friends` — once you have all video clips
-- `herLetters` — her words
-- `longMessage` — rewrite in your own voice + drop more orbital photos
-- `audioTracks` — the playlist per page
+- **Re-write the long message** (`longMessage.paragraphs` in `content.js`) in your voice
+- **Fill the timeline** (`timelineEvents` in `content.js`) with Kenny's actual milestones
+- **Add the remaining 2 friend videos** to `/public/media/friends/` and update `friends[]` in `content.js`
+- **Drop letter scans** into `/public/media/letters/` and update `herLetters[]` if you want her actual handwriting visible
+- **Drop your "rose-in-mouth" photo** as `/public/media/proposal/joseph-rose.jpg` (otherwise SVG fallback shows)
+- **Drop one audio file per page** into `/public/media/audio/` — names match the keys: `intro.mp3`, `origin.mp3`, `firsts.mp3`, `her-beauty.mp3`, `us.mp3`, `timeline.mp3`, `adventures.mp3`, `hard.mp3`, `puzzle.mp3`, `friends.mp3`, `letters.mp3`, `message.mp3`, `proposal.mp3`. Crossfades automatically on page transition.
 
 ## Running it
 
@@ -55,39 +77,35 @@ npm run dev      # local
 npm run build    # production into /dist
 ```
 
-## Deploy
-
-Vercel root directory: project root. Build command: `npm run build`. Output: `dist`.
-
-## Notes
-
-- Music does not autoplay until user clicks "Begin" on the intro (iOS Safari rule).
-- Each page transition is `mode="wait"` — no overlap.
-- Continue arrow appears at bottom of every page except intro and proposal. Keyboard arrows also work.
-- Clue buttons are on every storytelling page. Each clue collected makes the puzzle on page 8 easier.
-- Timeline auto-scrolls horizontally; pauses on hover; click any event for a detail modal.
-- Long message has up to 8 photos drifting in an elliptical orbit around the centered text.
-- Friends coverflow has italic-serif name above the active card (Blank Studio editorial style).
-- Test on Kenny's actual iPhone before sharing.
+Vercel: root directory is project root. Build command: `npm run build`. Output: `dist`.
 
 ## File map
 
 ```
 src/
-  App.jsx              ← page routing, keyboard nav, clue collection state
+  App.jsx              ← page routing, keyboard nav, clue collection
   main.jsx
   styles.css           ← all styling
-  data/content.js      ← all copy + media references
+  data/content.js      ← all copy + media references (the file you edit most)
   components/
-    Intro.jsx          ← SVG hero with letter-clipped photos
-    Chapter.jsx        ← reusable chapter w/ premium placeholders
-    Timeline.jsx       ← auto-scrolling life timeline
-    Puzzle.jsx         ← sliding puzzle, clue-aware shuffle
+    Intro.jsx          ← Hero with 3 portrait videos + Kenny title
+    Chapter.jsx        ← Video 5 layout with marquee rails + lightbox
+    SplitChapter.jsx   ← Video 6 layout with click-to-swap thumbs + lightbox
+    Lightbox.jsx       ← Shared fullscreen media preview
+    Timeline.jsx       ← Auto-scrolling life timeline
+    Puzzle.jsx         ← Sliding puzzle, clue-aware shuffle
     FriendsAlbum.jsx   ← 3D coverflow + editorial italic name
-    Letters.jsx        ← sticky-note board
-    LongMessage.jsx    ← orbital photos around centered text
-    Proposal.jsx       ← rose box + no-button trap + final yes
+    Letters.jsx        ← Sticky-note board
+    LongMessage.jsx    ← Orbital photos around centered text
+    Proposal.jsx       ← Rose box + no-button trap + final yes
     AudioController.jsx
-    ContinueButton.jsx ← reusable bottom-of-page next arrow
-public/media/          ← all photos / videos / audio go here
+    ContinueButton.jsx
+public/media/          ← all photos / videos / audio (89 MB currently)
 ```
+
+## Notes
+
+- Music does not autoplay until user clicks "Begin" on the intro (iOS Safari rule).
+- Each page transition is `mode="wait"` — no overlap.
+- Continue arrow appears at bottom of every page except intro and proposal.
+- Test on Kenny's actual iPhone before sharing.
