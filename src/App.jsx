@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Analytics } from '@vercel/analytics/react'
 import Intro from './components/Intro'
 import Chapter from './components/Chapter'
 import SplitChapter from './components/SplitChapter'
@@ -122,6 +123,7 @@ export default function App() {
       </AnimatePresence>
 
       <AudioController enabled={pageIdx > 0} pageKey={current.key} />
+      <Analytics />
     </div>
   )
 }
